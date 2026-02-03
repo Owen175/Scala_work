@@ -57,13 +57,38 @@ object Cipher {
   }
 
   /** The first optional statistical test, to guess the length of the key */
-  def crackKeyLen(ciphertext: Array[Char]) : Unit = ???
+  def crackKeyLen(ciphertext: Array[Char]) : Unit = {
+    var count = 0; val ciphertext_len = ciphertext.length
+    for (shift <- 1 to 30) {
+      count = 0
+      for (i <- 0 to ciphertext_len - 31) {
+        if (ciphertext(i) == ciphertext(shift + i)) {
+          count += 1
+        }
+      }
+      println(s"$shift: $count")
+    }
+  }
 
   /** The second optional statistical test, to guess characters of the key. */
-  def crackKey(klen: Int, ciphertext: Array[Char]) : Unit = ???
+  def crackKey(klen: Int, ciphertext: Array[Char]) : Unit = {
+    val ciphertext_len = ciphertext.length
+    var char = ' '
+    for (s <- klen until ciphertext_len by klen) {
+      for (i <- 0 until ciphertext_len - s) {
+        if (ciphertext(i) == ciphertext(i+s)) {
+          char = xor(' ', ciphertext(i))
+          if (32 <= char.toInt && 127 >= char.toInt) {
+            val keyIdx = i % klen
+            println(s"$keyIdx $char")
+          }
+        }
+      }
+    }
+  }
 
 /** The main method just selects which piece of functionality to run */
-  def main(args: Array[String]) = {
+  def main(args: Array[String]) : Unit = {
     // string to print if error occurs
     val errString = 
       "Usage: scala Cipher (-encrypt|-decrypt) key [file]\n"+
@@ -101,3 +126,6 @@ object Cipher {
     else println(errString)
   }
 }
+
+// PEMBERLEY
+// HOGWARTS
